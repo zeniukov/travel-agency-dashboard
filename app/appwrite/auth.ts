@@ -112,7 +112,16 @@ export const getAllUsers = async (limit: number, offset: number) => {
 
     if (total === 0) return { users: [], total };
 
-    return { users, total };
+    const normalizedUsers = users.map((u) => ({
+      id: u.$id,
+      name: u.name,
+      email: u.email,
+      imageUrl: u.imageUrl ?? "",
+      joinedAt: u.joinedAt,
+      status: u.status,
+    }));
+
+    return { users: normalizedUsers, total };
   } catch (e) {
     console.log("Error fetching users");
     return { users: [], total: 0 };

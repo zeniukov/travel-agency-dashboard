@@ -98,4 +98,10 @@ npm install dayjs
 
 npm install appwrite
 
-git commit -m 'Implemented Routing, Dashboard Layout & UI, Auth Functionality"
+npm install @sentry/react-router @sentry/profiling-node
+
+npx react-router reveal
+
+npm install -D cross-env
+
+npm install @google/generative-ai

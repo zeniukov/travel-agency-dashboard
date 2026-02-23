@@ -3,14 +3,17 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "build": "react-router build",
+    "build": "cross-env NODE_OPTIONS=--import=./instrument.server.mjs react-router build",
+    "typecheck": "react-router typegen && tsc",
     "dev": "react-router dev",
-    "start": "react-router-serve ./build/server/index.js",
-    "typecheck": "react-router typegen && tsc"
+    "start": "cross-env NODE_OPTIONS=--import=./instrument.server.mjs react-router-serve ./build/server/index.js"
   },
   "dependencies": {
+    "@google/generative-ai": "^0.24.1",
     "@react-router/node": "7.12.0",
     "@react-router/serve": "7.12.0",
+    "@sentry/profiling-node": "^9.20.0",
+    "@sentry/react-router": "^9.20.0",
     "@syncfusion/ej2-base": "^32.2.3",
     "@syncfusion/ej2-react-buttons": "^32.2.3",
     "@syncfusion/ej2-react-charts": "^32.2.4",
@@ -34,6 +37,7 @@
     "@types/node": "^22",
     "@types/react": "^19.2.7",
     "@types/react-dom": "^19.2.3",
+    "cross-env": "^10.1.0",
     "tailwindcss": "^4.1.13",
     "typescript": "^5.9.2",
     "vite": "^7.1.7",
