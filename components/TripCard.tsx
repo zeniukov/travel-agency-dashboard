@@ -1,16 +1,16 @@
+import { Link, useLocation } from "react-router";
 import {
   ChipDirective,
   ChipListComponent,
   ChipsDirective,
 } from "@syncfusion/ej2-react-buttons";
-import { Link, useLocation } from "react-router";
 import { cn, getFirstWord } from "~/lib/utils";
 
 const TripCard = ({
   id,
   name,
-  imageUrl,
   location,
+  imageUrl,
   tags,
   price,
 }: TripCardProps) => {
@@ -18,12 +18,12 @@ const TripCard = ({
 
   return (
     <Link
-      className="trip-card"
       to={
         path.pathname === "/" || path.pathname.startsWith("/travel")
           ? `/travel/${id}`
           : `/trips/${id}`
       }
+      className="trip-card"
     >
       <img src={imageUrl} alt={name} />
 
@@ -49,7 +49,7 @@ const TripCard = ({
                 cssClass={cn(
                   index === 1
                     ? "!bg-pink-50 !text-pink-500"
-                    : "!bg-success-700",
+                    : "!bg-success-50 !text-success-700",
                 )}
               />
             ))}

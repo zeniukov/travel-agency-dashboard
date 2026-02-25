@@ -3,7 +3,8 @@ import { GoogleGenerativeAI } from "@google/generative-ai";
 import { parseMarkdownToJson } from "~/lib/utils";
 import { appwriteConfig, database } from "~/appwrite/client";
 import { ID } from "appwrite";
-import { mockTrip } from "~/mocks/mockTrip";
+import { mockTrips } from "~/mocks/mockTrips";
+import { getMockTrip } from "~/mocks/getMockTrip";
 
 export const action = async ({ request }: ActionFunctionArgs) => {
   const {
@@ -89,7 +90,7 @@ export const action = async ({ request }: ActionFunctionArgs) => {
 
     if (isDev) {
       console.log("⚠️ Using MOCK trip data");
-      trip = mockTrip;
+      trip = getMockTrip(country);
     } else {
       const textResult = await genAI
         .getGenerativeModel({ model: "gemini-2.0-flash" })
