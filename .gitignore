@@ -2,6 +2,7 @@
 .env
 /node_modules/
 /потом удалить/
+.env.local
 
 # React Router
 /.react-router/
