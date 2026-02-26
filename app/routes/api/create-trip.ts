@@ -6,15 +6,16 @@ import { ID } from "appwrite";
 // import { mockTrips } from "~/mocks/mockTrips";
 // import { getMockTrip } from "~/mocks/getMockTrip";
 
-if (!process.env.GEMINI_API_KEY) {
-  throw new Error("GEMINI_API_KEY is missing");
-}
-
-if (!process.env.UNSPLASH_ACCESS_KEY) {
-  console.warn("UNSPLASH_ACCESS_KEY is missing");
-}
-
 export const action = async ({ request }: ActionFunctionArgs) => {
+  if (!process.env.GEMINI_API_KEY) {
+    console.error("GEMINI_API_KEY is missing");
+    return data({ error: "Server configuration error" }, { status: 500 });
+  }
+
+  if (!process.env.UNSPLASH_ACCESS_KEY) {
+    console.warn("UNSPLASH_ACCESS_KEY is missing");
+  }
+
   const {
     country,
     numberOfDays,
@@ -124,13 +125,31 @@ export const action = async ({ request }: ActionFunctionArgs) => {
     //   trip = parseMarkdownToJson(textResult.response.text());
     // }
 
-    const imageResponse = await fetch(
-      `https://api.unsplash.com/search/photos?query=${country} ${interests} ${travelStyle}&client_id=${unsplashApiKey}`,
-    );
+    let imageUrls: string[] = [];
 
-    const imageUrls = (await imageResponse.json()).results
-      .slice(0, 3)
-      .map((result: any) => result.urls?.regular || null);
+    try {
+      const imageResponse = await fetch(
+        `https://api.unsplash.com/search/photos?query=${country} ${interests} ${travelStyle}&client_id=${unsplashApiKey}`,
+      );
+
+      if (imageResponse.ok) {
+        const json = await imageResponse.json();
+        imageUrls = json.results
+          ?.slice(0, 3)
+          .map((r: any) => r.urls?.regular)
+          .filter(Boolean);
+      }
+    } catch (e) {
+      console.warn("Unsplash failed, continuing without images");
+    }
+
+    // const imageResponse = await fetch(
+    //   `https://api.unsplash.com/search/photos?query=${country} ${interests} ${travelStyle}&client_id=${unsplashApiKey}`,
+    // );
+
+    // const imageUrls = (await imageResponse.json()).results
+    //   .slice(0, 3)
+    //   .map((result: any) => result.urls?.regular || null);
 
     const result = await database.createDocument(
       appwriteConfig.databaseId,
