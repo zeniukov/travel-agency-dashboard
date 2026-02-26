@@ -6,6 +6,14 @@ import { ID } from "appwrite";
 // import { mockTrips } from "~/mocks/mockTrips";
 // import { getMockTrip } from "~/mocks/getMockTrip";
 
+if (!process.env.GEMINI_API_KEY) {
+  throw new Error("GEMINI_API_KEY is missing");
+}
+
+if (!process.env.UNSPLASH_ACCESS_KEY) {
+  console.warn("UNSPLASH_ACCESS_KEY is missing");
+}
+
 export const action = async ({ request }: ActionFunctionArgs) => {
   const {
     country,
@@ -91,15 +99,15 @@ export const action = async ({ request }: ActionFunctionArgs) => {
         .getGenerativeModel({ model: "gemini-2.0-flash" })
         .generateContent([prompt]);
 
-      const rawText = textResult.response.text();
+      const rawText = textResult?.response?.text();
 
       if (!rawText) {
-        throw new Error("Gemini returned empty response");
+        throw new Error("Empty Gemini response");
       }
 
       trip = parseMarkdownToJson(rawText);
     } catch (err) {
-      console.error("Gemini failed:", err);
+      console.error("❌ Gemini failed", err);
     }
     // const isDev = process.env.NODE_ENV !== "production";
 
