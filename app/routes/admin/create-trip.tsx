@@ -1,33 +1,3 @@
-import { Header } from "components";
-import { ComboBoxComponent } from "@syncfusion/ej2-react-dropdowns";
-import type { Route } from "./+types/create-trip";
-import { comboBoxItems, interests, selectItems } from "~/constants";
-import { cn, formatKey } from "~/lib/utils";
-import {
-  LayerDirective,
-  LayersDirective,
-  MapsComponent,
-} from "@syncfusion/ej2-react-maps";
-import { world_map } from "~/constants/world_map";
-import { useNavigate } from "react-router";
-import React, { useState } from "react";
-import { ButtonComponent } from "@syncfusion/ej2-react-buttons";
-import { account } from "~/appwrite/client";
-
-export const loader = async () => {
-  const response = await fetch(
-    "https://restcountries.com/v3.1/all?fields=name,flag,latlng,maps",
-  );
-  const data = await response.json();
-
-  return data.map((country: any) => ({
-    name: country.flag + country.name.common,
-    coordinates: country.latlng,
-    value: country.name.common,
-    openStreetMap: country.maps?.openStreetMap,
-  }));
-};
-
 // type CachedCountries = {
 //   data: Country[];
 //   fetchedAt: number;
@@ -89,7 +59,35 @@ export const loader = async () => {
 //   }
 // };
 
-const createTrip = ({ loaderData }: Route.ComponentProps) => {
+import { Header } from "../../../components";
+import { ComboBoxComponent } from "@syncfusion/ej2-react-dropdowns";
+import type { Route } from "./+types/create-trip";
+import { comboBoxItems, selectItems } from "~/constants";
+import { cn, formatKey } from "~/lib/utils";
+import {
+  LayerDirective,
+  LayersDirective,
+  MapsComponent,
+} from "@syncfusion/ej2-react-maps";
+import React, { useState } from "react";
+import { world_map } from "~/constants/world_map";
+import { ButtonComponent } from "@syncfusion/ej2-react-buttons";
+import { account } from "~/appwrite/client";
+import { useNavigate } from "react-router";
+
+export const loader = async () => {
+  const response = await fetch("https://restcountries.com/v3.1/all");
+  const data = await response.json();
+
+  return data.map((country: any) => ({
+    name: country.flag + country.name.common,
+    coordinates: country.latlng,
+    value: country.name.common,
+    openStreetMap: country.maps?.openStreetMap,
+  }));
+};
+
+const CreateTrip = ({ loaderData }: Route.ComponentProps) => {
   const countries = loaderData as Country[];
   const navigate = useNavigate();
 
@@ -101,7 +99,6 @@ const createTrip = ({ loaderData }: Route.ComponentProps) => {
     duration: 0,
     groupType: "",
   });
-
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
@@ -126,9 +123,8 @@ const createTrip = ({ loaderData }: Route.ComponentProps) => {
       setLoading(false);
       return;
     }
-
     const user = await account.get();
-    if (!user) {
+    if (!user.$id) {
       console.error("User not authenticated");
       setLoading(false);
       return;
@@ -161,12 +157,8 @@ const createTrip = ({ loaderData }: Route.ComponentProps) => {
   };
 
   const handleChange = (key: keyof TripFormData, value: string | number) => {
-    setFormData({
-      ...formData,
-      [key]: value,
-    });
+    setFormData({ ...formData, [key]: value });
   };
-
   const countryData = countries.map((country) => ({
     text: country.name,
     value: country.value,
@@ -183,7 +175,7 @@ const createTrip = ({ loaderData }: Route.ComponentProps) => {
   ];
 
   return (
-    <main className="flex flex-col gap-19 pb-20 wrapper">
+    <main className="flex flex-col gap-10 pb-20 wrapper">
       <Header
         title="Add a New Trip"
         description="View and edit AI Generated travel plans"
@@ -196,9 +188,7 @@ const createTrip = ({ loaderData }: Route.ComponentProps) => {
             <ComboBoxComponent
               id="country"
               dataSource={countryData}
-              // dataSource={countries}
               fields={{ text: "text", value: "value" }}
-              // fields={{ value: "value" }}
               placeholder="Select a Country"
               className="combo-box"
               change={(e: { value: string | undefined }) => {
@@ -230,7 +220,7 @@ const createTrip = ({ loaderData }: Route.ComponentProps) => {
               id="duration"
               name="duration"
               type="number"
-              placeholder="Enter a number of days (5, 12 ...)"
+              placeholder="Enter a number of days"
               className="form-input placeholder:text-gray-100"
               onChange={(e) => handleChange("duration", Number(e.target.value))}
             />
@@ -293,7 +283,6 @@ const createTrip = ({ loaderData }: Route.ComponentProps) => {
               <p>{error}</p>
             </div>
           )}
-
           <footer className="px-6 w-full">
             <ButtonComponent
               type="submit"
@@ -304,7 +293,6 @@ const createTrip = ({ loaderData }: Route.ComponentProps) => {
                 src={`/assets/icons/${loading ? "loader.svg" : "magic-star.svg"}`}
                 className={cn("size-5", { "animate-spin": loading })}
               />
-
               <span className="p-16-semibold text-white">
                 {loading ? "Generating..." : "Generate Trip"}
               </span>
@@ -315,4 +303,4 @@ const createTrip = ({ loaderData }: Route.ComponentProps) => {
     </main>
   );
 };
-export default createTrip;
+export default CreateTrip;
