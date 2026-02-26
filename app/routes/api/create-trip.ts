@@ -3,8 +3,8 @@ import { GoogleGenerativeAI } from "@google/generative-ai";
 import { parseMarkdownToJson } from "~/lib/utils";
 import { appwriteConfig, database } from "~/appwrite/client";
 import { ID } from "appwrite";
-import { mockTrips } from "~/mocks/mockTrips";
-import { getMockTrip } from "~/mocks/getMockTrip";
+// import { mockTrips } from "~/mocks/mockTrips";
+// import { getMockTrip } from "~/mocks/getMockTrip";
 
 export const action = async ({ request }: ActionFunctionArgs) => {
   const {
@@ -45,7 +45,7 @@ export const action = async ({ request }: ActionFunctionArgs) => {
     "budget": "${budget}",
     "travelStyle": "${travelStyle}",
     "country": "${country}",
-    "interests": ${interests},
+    "interests": "${interests}",
     "groupType": "${groupType}",
     "bestTimeToVisit": [
       '🌸 Season (from month to month): reason to visit',
@@ -78,12 +78,29 @@ export const action = async ({ request }: ActionFunctionArgs) => {
     ]
     }`;
 
-    const textResult = await genAI
-      .getGenerativeModel({ model: "gemini-2.0-flash" })
-      .generateContent([prompt]);
+    // const textResult = await genAI
+    //   .getGenerativeModel({ model: "gemini-2.0-flash" })
+    //   .generateContent([prompt]);
 
-    const trip = parseMarkdownToJson(textResult.response.text());
+    // const trip = parseMarkdownToJson(textResult.response.text());
 
+    let trip;
+
+    try {
+      const textResult = await genAI
+        .getGenerativeModel({ model: "gemini-2.0-flash" })
+        .generateContent([prompt]);
+
+      const rawText = textResult.response.text();
+
+      if (!rawText) {
+        throw new Error("Gemini returned empty response");
+      }
+
+      trip = parseMarkdownToJson(rawText);
+    } catch (err) {
+      console.error("Gemini failed:", err);
+    }
     // const isDev = process.env.NODE_ENV !== "production";
 
     // let trip;
