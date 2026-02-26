@@ -78,26 +78,26 @@ export const action = async ({ request }: ActionFunctionArgs) => {
     ]
     }`;
 
-    // const textResult = await genAI
-    //   .getGenerativeModel({ model: "gemini-2.0-flash" })
-    //   .generateContent([prompt]);
+    const textResult = await genAI
+      .getGenerativeModel({ model: "gemini-2.0-flash" })
+      .generateContent([prompt]);
 
-    // const trip = parseMarkdownToJson(textResult.response.text());
+    const trip = parseMarkdownToJson(textResult.response.text());
 
-    const isDev = process.env.NODE_ENV !== "production";
+    // const isDev = process.env.NODE_ENV !== "production";
 
-    let trip;
+    // let trip;
 
-    if (isDev) {
-      console.log("⚠️ Using MOCK trip data");
-      trip = getMockTrip(country);
-    } else {
-      const textResult = await genAI
-        .getGenerativeModel({ model: "gemini-2.0-flash" })
-        .generateContent([prompt]);
+    // if (isDev) {
+    //   console.log("⚠️ Using MOCK trip data");
+    //   trip = getMockTrip(country);
+    // } else {
+    //   const textResult = await genAI
+    //     .getGenerativeModel({ model: "gemini-2.0-flash" })
+    //     .generateContent([prompt]);
 
-      trip = parseMarkdownToJson(textResult.response.text());
-    }
+    //   trip = parseMarkdownToJson(textResult.response.text());
+    // }
 
     const imageResponse = await fetch(
       `https://api.unsplash.com/search/photos?query=${country} ${interests} ${travelStyle}&client_id=${unsplashApiKey}`,

@@ -14,80 +14,80 @@ import React, { useState } from "react";
 import { ButtonComponent } from "@syncfusion/ej2-react-buttons";
 import { account } from "~/appwrite/client";
 
-type CachedCountries = {
-  data: Country[];
-  fetchedAt: number;
+export const loader = async () => {
+  const response = await fetch(
+    "https://restcountries.com/v3.1/all?fields=name,flag,latlng,maps",
+  );
+  const data = await response.json();
+
+  return data.map((country: any) => ({
+    name: country.flag + country.name.common,
+    coordinates: country.latlng,
+    value: country.name.common,
+    openStreetMap: country.maps?.openStreetMap,
+  }));
 };
 
-let countriesCache: CachedCountries | null = null;
-
-const CACHE_TTL = 1000 * 60 * 60 * 24;
-
-// export const loader = async () => {
-//   const response = await fetch(
-//     "https://restcountries.com/v3.1/all?fields=name,flag,latlng,maps",
-//   );
-//   const data = await response.json();
-
-//   return data.map((country: any) => ({
-//     name: country.flag + country.name.common,
-//     coordinates: country.latlng,
-//     value: country.name.common,
-//     openStreetMap: country.maps?.openStreetMap,
-//   }));
+// type CachedCountries = {
+//   data: Country[];
+//   fetchedAt: number;
 // };
 
-export const loader = async () => {
-  const now = Date.now();
+// let countriesCache: CachedCountries | null = null;
 
-  if (countriesCache && now - countriesCache.fetchedAt < CACHE_TTL) {
-    return countriesCache.data;
-  }
+// const CACHE_TTL = 1000 * 60 * 60 * 24;
 
-  try {
-    const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), 8000);
+// export const loader = async () => {
+//   const now = Date.now();
 
-    const response = await fetch(
-      "https://restcountries.com/v3.1/all?fields=name,flag,latlng,maps",
-      {
-        headers: {
-          "User-Agent": "travel-app/1.0",
-        },
-      },
-    );
+//   if (countriesCache && now - countriesCache.fetchedAt < CACHE_TTL) {
+//     return countriesCache.data;
+//   }
 
-    clearTimeout(timeout);
+//   try {
+//     const controller = new AbortController();
+//     const timeout = setTimeout(() => controller.abort(), 8000);
 
-    if (!response.ok) {
-      throw new Error(`Failed to fetch countries: ${response.status}`);
-    }
+//     const response = await fetch(
+//       "https://restcountries.com/v3.1/all?fields=name,flag,latlng,maps",
+//       {
+//         headers: {
+//           "User-Agent": "travel-app/1.0",
+//         },
+//       },
+//     );
 
-    const rawData = await response.json();
+//     clearTimeout(timeout);
 
-    const mappedData: Country[] = rawData.map((country: any) => ({
-      name: `${country.flag} ${country.name.common}`,
-      coordinates: country.latlng,
-      value: country.name.common,
-      openStreetMap: country.maps?.openStreetMap,
-    }));
+//     if (!response.ok) {
+//       throw new Error(`Failed to fetch countries: ${response.status}`);
+//     }
 
-    countriesCache = {
-      data: mappedData,
-      fetchedAt: now,
-    };
+//     const rawData = await response.json();
 
-    return mappedData;
-  } catch (error) {
-    console.error("Countries fetch failed:", error);
+//     const mappedData: Country[] = rawData.map((country: any) => ({
+//       name: `${country.flag} ${country.name.common}`,
+//       coordinates: country.latlng,
+//       value: country.name.common,
+//       openStreetMap: country.maps?.openStreetMap,
+//     }));
 
-    if (countriesCache) {
-      return countriesCache.data;
-    }
+//     countriesCache = {
+//       data: mappedData,
+//       fetchedAt: now,
+//     };
 
-    throw new Response("Failed to load countries", { status: 500 });
-  }
-};
+//     return mappedData;
+//   } catch (error) {
+//     console.error("Countries fetch failed:", error);
+
+//     if (countriesCache) {
+//       return countriesCache.data;
+//     }
+
+//     throw new Response("Failed to load countries", { status: 500 });
+//   }
+// };
 
 const createTrip = ({ loaderData }: Route.ComponentProps) => {
   const countries = loaderData as Country[];
