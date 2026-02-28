@@ -44,6 +44,15 @@ const SignIn = () => {
             type="button"
             iconCss="e-search-icon"
             className="button-class !h-11 !w-full"
+            // onClick={logIn}
+          >
+            <span className="p-18-semibold text-white">Sign in</span>
+          </ButtonComponent>
+
+          <ButtonComponent
+            type="button"
+            iconCss="e-search-icon"
+            className="button-class !h-11 !w-full"
             onClick={loginWithGoogle}
           >
             <img
