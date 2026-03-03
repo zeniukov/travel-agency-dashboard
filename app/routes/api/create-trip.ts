@@ -7,8 +7,6 @@ import { ID } from "appwrite";
 // import { getMockTrip } from "~/mocks/getMockTrip";
 
 export const action = async ({ request }: ActionFunctionArgs) => {
-  console.log("KEY EXISTS:", !!process.env.GEMINI_API_KEY);
-
   if (!process.env.GEMINI_API_KEY) {
     console.error("GEMINI_API_KEY is missing");
     return data({ error: "Server configuration error" }, { status: 500 });
@@ -99,7 +97,7 @@ export const action = async ({ request }: ActionFunctionArgs) => {
 
     try {
       const textResult = await genAI
-        .getGenerativeModel({ model: "gemini-2.0-flash" })
+        .getGenerativeModel({ model: "gemini-1.5-flash" })
         .generateContent([prompt]);
 
       const rawText = textResult?.response?.text();
