@@ -105,3 +105,11 @@ npx react-router reveal
 npm install -D cross-env
 
 npm install @google/generative-ai
+
+---
+
+npx shadcn@latest init
+
+npx shadcn@latest add form input button card
+
+npm i zod

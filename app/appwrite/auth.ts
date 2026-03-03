@@ -1,6 +1,94 @@
 import { ID, OAuthProvider, Query } from "appwrite";
-import { account, database, appwriteConfig } from "~/appwrite/client";
 import { redirect } from "react-router";
+import { account, database, appwriteConfig } from "~/appwrite/client";
+
+export const requireAuth = async () => {
+  try {
+    const user = await account.get();
+    return user;
+  } catch {
+    return redirect("/sign-in");
+  }
+};
+
+export const registerUser = async (
+  email: string,
+  username: string,
+  password: string,
+) => {
+  try {
+    const user = await account.create(ID.unique(), email, password, username);
+    return user;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const logIn = async (email: string, password: string) => {
+  try {
+    const newSession = await account.createEmailPasswordSession({
+      email,
+      password,
+    });
+    return newSession || null;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const createUserProfile = async () => {
+  try {
+    const user = await account.get();
+
+    const createdUser = await database.createDocument(
+      appwriteConfig.databaseId,
+      appwriteConfig.userCollectionId,
+      ID.unique(),
+      {
+        accountId: user.$id,
+        email: user.email,
+        name: user.name,
+        joinedAt: new Date().toISOString(),
+      },
+    );
+    return createdUser;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const signUpUser = async (
+  email: string,
+  username: string,
+  password: string,
+) => {
+  try {
+    const isUsernameTaken = await getExistingUserByUsername(username);
+    if (isUsernameTaken) {
+      throw { code: 409, message: "username already taken" };
+    }
+
+    await registerUser(email, username, password);
+
+    await logIn(email, password);
+
+    const profile = await createUserProfile();
+
+    return profile;
+  } catch (error: any) {
+    console.error("Error in signUpUser composition:", error);
+    throw error;
+  }
+};
+
+export const getExistingUserByUsername = async (username: string) => {
+  const { total } = await database.listDocuments(
+    appwriteConfig.databaseId,
+    appwriteConfig.userCollectionId,
+    [Query.equal("name", username)],
+  );
+  return total > 0;
+};
 
 export const getExistingUser = async (id: string) => {
   try {

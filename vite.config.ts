@@ -23,9 +23,9 @@ export default defineConfig((config) => {
   return {
     plugins: [
       tailwindcss(),
+      tsconfigPaths(),
       reactRouter(),
       sentryReactRouter(sentryConfig, config),
-      tsconfigPaths(),
     ],
     ssr: {
       noExternal: [/@syncfusion/],

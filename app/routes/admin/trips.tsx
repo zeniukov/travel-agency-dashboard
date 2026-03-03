@@ -1,5 +1,5 @@
 import { getAllTrips, getTripById } from "~/appwrite/trips";
-import { Header, TripCard } from "../../../components";
+import { Header, TripCard } from "../../components";
 import type { Route } from "./+types/trips";
 import { useSearchParams, type LoaderFunctionArgs } from "react-router";
 import { parseTripData } from "~/lib/utils";
