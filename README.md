@@ -113,3 +113,6 @@ npx shadcn@latest init
 npx shadcn@latest add form input button card
 
 npm i zod
+
+npm uninstall @google/generative-ai
+npm install @google/genai

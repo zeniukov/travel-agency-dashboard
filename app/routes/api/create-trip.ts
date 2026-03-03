@@ -1,12 +1,30 @@
 import { type ActionFunctionArgs, data } from "react-router";
-import { GoogleGenerativeAI } from "@google/generative-ai";
+import { GoogleGenAI } from "@google/genai";
 import { parseMarkdownToJson } from "~/lib/utils";
 import { appwriteConfig, database } from "~/appwrite/client";
 import { ID } from "appwrite";
 // import { mockTrips } from "~/mocks/mockTrips";
 // import { getMockTrip } from "~/mocks/getMockTrip";
 
+const genAI = new GoogleGenAI({
+  apiKey: process.env.GEMINI_API_KEY!,
+});
+// const genAI = new GoogleGenerativeAI({
+//   apiKey: process.env.GEMINI_API_KEY!,
+//   transport: {
+//     fetch: (url, options) =>
+//       fetch("https://your-proxy.com", {
+//         method: "POST",
+//         body: JSON.stringify({ url, options }),
+//       }),
+//   },
+// });
+const unsplashApiKey = process.env.UNSPLASH_ACCESS_KEY!;
+
 export const action = async ({ request }: ActionFunctionArgs) => {
+  const models = await genAI.models.list();
+  console.log(models);
+
   if (!process.env.GEMINI_API_KEY) {
     console.error("GEMINI_API_KEY is missing");
     return data({ error: "Server configuration error" }, { status: 500 });
@@ -25,19 +43,6 @@ export const action = async ({ request }: ActionFunctionArgs) => {
     groupType,
     userId,
   } = await request.json();
-
-  const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!);
-  // const genAI = new GoogleGenerativeAI({
-  //   apiKey: process.env.GEMINI_API_KEY!,
-  //   transport: {
-  //     fetch: (url, options) =>
-  //       fetch("https://your-proxy.com", {
-  //         method: "POST",
-  //         body: JSON.stringify({ url, options }),
-  //       }),
-  //   },
-  // });
-  const unsplashApiKey = process.env.UNSPLASH_ACCESS_KEY!;
 
   try {
     const prompt = `Generate a ${numberOfDays}-day travel itinerary for ${country} based on the following user information:
@@ -96,11 +101,16 @@ export const action = async ({ request }: ActionFunctionArgs) => {
     let trip;
 
     try {
-      const textResult = await genAI
-        .getGenerativeModel({ model: "gemini-1.5-flash" })
-        .generateContent([prompt]);
+      // const textResult = await genAI
+      //   .getGenerativeModel({ model: "gemini-1.5-flash-latest" })
+      //   .generateContent([prompt]);
+      const textResult = await genAI.models.generateContent({
+        model: "gemini-1.5-flash",
+        contents: prompt,
+      });
 
-      const rawText = textResult?.response?.text();
+      // const rawText = textResult?.response?.text();
+      const rawText = textResult.text;
 
       if (!rawText) {
         throw new Error("Empty Gemini response");
