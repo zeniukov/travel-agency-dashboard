@@ -22,8 +22,8 @@ const genAI = new GoogleGenAI({
 const unsplashApiKey = process.env.UNSPLASH_ACCESS_KEY!;
 
 export const action = async ({ request }: ActionFunctionArgs) => {
-  const models = await genAI.models.list();
-  console.log(models);
+  // const models = await genAI.models.list();
+  // console.log(models);
 
   if (!process.env.GEMINI_API_KEY) {
     console.error("GEMINI_API_KEY is missing");
@@ -50,10 +50,12 @@ export const action = async ({ request }: ActionFunctionArgs) => {
     Interests: '${interests}'
     TravelStyle: '${travelStyle}'
     GroupType: '${groupType}'
-    Return the itinerary and lowest estimated price in a clean, non-markdown JSON format with the following structure:
+
+    **Important:** Return **ONLY valid JSON** without markdown, ellipses, emojis, or extra text. The JSON structure must match:
+
     {
     "name": "A descriptive title for the trip",
-    "description": "A brief description of the trip and its highlights not exceeding 100 words",
+    "description": "Brief description under 100 words",
     "estimatedPrice": "Lowest average price for the trip in USD, e.g.$price",
     "duration": ${numberOfDays},
     "budget": "${budget}",
@@ -96,9 +98,9 @@ export const action = async ({ request }: ActionFunctionArgs) => {
     //   .getGenerativeModel({ model: "gemini-2.0-flash" })
     //   .generateContent([prompt]);
 
-    // const trip = parseMarkdownToJson(textResult.response.text());
-
     let trip;
+
+    // const trip = parseMarkdownToJson(textResult.response.text());
 
     try {
       // const textResult = await genAI
@@ -116,9 +118,14 @@ export const action = async ({ request }: ActionFunctionArgs) => {
         throw new Error("Empty Gemini response");
       }
 
-      trip = parseMarkdownToJson(rawText);
+      // trip = parseMarkdownToJson(rawText);
+      trip = JSON.parse(rawText);
     } catch (err) {
       console.error("❌ Gemini failed", err);
+      return data(
+        { error: "Gemini returned invalid JSON. Try again later." },
+        { status: 500 },
+      );
     }
     // const isDev = process.env.NODE_ENV !== "production";
 
