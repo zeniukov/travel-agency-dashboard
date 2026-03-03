@@ -7,6 +7,8 @@ import { ID } from "appwrite";
 // import { getMockTrip } from "~/mocks/getMockTrip";
 
 export const action = async ({ request }: ActionFunctionArgs) => {
+  console.log("KEY EXISTS:", !!process.env.GEMINI_API_KEY);
+
   if (!process.env.GEMINI_API_KEY) {
     console.error("GEMINI_API_KEY is missing");
     return data({ error: "Server configuration error" }, { status: 500 });

@@ -15,7 +15,6 @@ interface AuthFormFieldProps<T extends FieldValues> {
   placeholder: string;
   description?: string;
   inputType?: string;
-  autoComplete?: string;
   formControl: Control<T>;
 }
 
@@ -25,7 +24,6 @@ function AuthFormField<T extends FieldValues>({
   placeholder,
   description,
   inputType,
-  autoComplete,
   formControl,
 }: AuthFormFieldProps<T>) {
   return (
