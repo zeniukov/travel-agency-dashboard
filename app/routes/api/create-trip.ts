@@ -105,7 +105,7 @@ export const action = async ({ request }: ActionFunctionArgs) => {
       //   .getGenerativeModel({ model: "gemini-1.5-flash-latest" })
       //   .generateContent([prompt]);
       const textResult = await genAI.models.generateContent({
-        model: "gemini-1.5-flash",
+        model: "models/gemini-flash-latest",
         contents: prompt,
       });
 
