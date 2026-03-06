@@ -4,16 +4,12 @@ import { z } from "zod";
 import { Form } from "~/components/ui";
 import { useNavigate } from "react-router";
 import { useState } from "react";
-import { requireAuth, signUpUser } from "~/appwrite/auth";
+import { signUpUser } from "~/appwrite/auth";
 import { AuthFormField, AuthLayout, LoadingButton } from "~/components";
 
-export async function clientLoader() {
-  try {
-    await requireAuth();
-  } catch (e) {
-    console.log("Error fetching user", e);
-  }
-}
+// export async function clientLoader() {
+//   return requireGuest();
+// }
 
 const registerSchema = z
   .object({

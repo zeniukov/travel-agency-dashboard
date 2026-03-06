@@ -11,18 +11,19 @@ export const requireAuth = async () => {
   }
 };
 
-export const registerUser = async (
-  email: string,
-  username: string,
-  password: string,
-) => {
-  try {
-    const user = await account.create(ID.unique(), email, password, username);
-    return user;
-  } catch (error) {
-    throw error;
-  }
-};
+// export const requireGuest = async () => {
+//   try {
+//     const user = await account.get();
+
+//     if (user?.$id) {
+//       return redirect("/");
+//     }
+
+//     return null;
+//   } catch {
+//     return null;
+//   }
+// };
 
 export const logIn = async (email: string, password: string) => {
   try {
@@ -31,6 +32,28 @@ export const logIn = async (email: string, password: string) => {
       password,
     });
     return newSession || null;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const getExistingUserByUsername = async (username: string) => {
+  const { total } = await database.listDocuments(
+    appwriteConfig.databaseId,
+    appwriteConfig.userCollectionId,
+    [Query.equal("name", username)],
+  );
+  return total > 0;
+};
+
+export const registerUser = async (
+  email: string,
+  username: string,
+  password: string,
+) => {
+  try {
+    const user = await account.create(ID.unique(), email, password, username);
+    return user;
   } catch (error) {
     throw error;
   }
@@ -79,15 +102,6 @@ export const signUpUser = async (
     console.error("Error in signUpUser composition:", error);
     throw error;
   }
-};
-
-export const getExistingUserByUsername = async (username: string) => {
-  const { total } = await database.listDocuments(
-    appwriteConfig.databaseId,
-    appwriteConfig.userCollectionId,
-    [Query.equal("name", username)],
-  );
-  return total > 0;
 };
 
 export const getExistingUser = async (id: string) => {
@@ -161,13 +175,14 @@ export const loginWithGoogle = async () => {
   }
 };
 
-export const logoutUser = async () => {
-  try {
-    await account.deleteSession("current");
-  } catch (error) {
-    console.error("Error during logout:", error);
-  }
-};
+// export const logoutUser = async () => {
+//   try {
+//     await account.deleteSession("current");
+//     redirect("/");
+//   } catch (error) {
+//     console.error("Error during logout:", error);
+//   }
+// };
 
 export const getUser = async () => {
   try {

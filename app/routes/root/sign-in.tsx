@@ -1,19 +1,16 @@
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router";
-import { logIn, loginWithGoogle, requireAuth } from "~/appwrite/auth";
+import { logIn, loginWithGoogle } from "~/appwrite/auth";
 import { Form } from "~/components/ui";
 import z from "zod";
 import { useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { AuthFormField, AuthLayout, LoadingButton } from "~/components";
+import { useAuth } from "~/appwrite/AuthProvider";
 
-export async function clientLoader() {
-  try {
-    await requireAuth();
-  } catch (e) {
-    console.log("Error fetching user", e);
-  }
-}
+// export async function clientLoader() {
+//   return requireGuest();
+// }
 
 const loginSchema = z.object({
   email: z.string().email("Incorrect email address"),
@@ -33,10 +30,13 @@ const SignIn = () => {
   });
 
   const onSubmit = async (values: z.infer<typeof loginSchema>) => {
+    const { refreshUser } = useAuth();
     setIsLoading(true);
 
     try {
       const session = await logIn(values.email, values.password);
+
+      await refreshUser();
 
       if (session) {
         navigate("/");

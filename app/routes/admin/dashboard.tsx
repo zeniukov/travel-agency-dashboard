@@ -26,20 +26,21 @@ import {
   Tooltip,
 } from "@syncfusion/ej2-react-charts";
 import { tripXAxis, tripyAxis, userXAxis, useryAxis } from "~/constants";
+import { useAuth } from "~/appwrite/AuthProvider";
 
 // const { totalUsers, usersJoined, totalTrips, tripsCreated, userRole } =
 //   dashboardStats;
 
 export const clientLoader = async () => {
   const [
-    user,
+    // user,
     dashboardStats,
     trips,
     userGrowth,
     tripsByTravelStyle,
     allUsers,
   ] = await Promise.all([
-    await getUser(),
+    // await getUser(),
     await getUsersAndTripsStats(),
     await getAllTrips(4, 0),
     await getUserGrowthPerDay(),
@@ -60,7 +61,7 @@ export const clientLoader = async () => {
   }));
 
   return {
-    user,
+    // user,
     dashboardStats,
     allTrips,
     userGrowth,
@@ -69,8 +70,13 @@ export const clientLoader = async () => {
   };
 };
 
+type LayoutContext = {
+  user: User;
+};
+
 const Dashboard = ({ loaderData }: Route.ComponentProps) => {
-  const user = loaderData.user as User | null;
+  // const user = loaderData.user as User | null;
+  const { user } = useAuth();
   const { dashboardStats, allTrips, userGrowth, tripsByTravelStyle, allUsers } =
     loaderData;
 
