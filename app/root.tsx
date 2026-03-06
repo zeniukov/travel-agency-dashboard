@@ -25,6 +25,7 @@ export const links: Route.LinksFunction = () => [
 ];
 
 import { registerLicense } from "@syncfusion/ej2-base";
+import { AuthProvider } from "./appwrite/AuthProvider";
 
 registerLicense(import.meta.env.VITE_SYNCFUSION_LICENSE_KEY);
 
@@ -47,7 +48,11 @@ export function Layout({ children }: { children: React.ReactNode }) {
 }
 
 export default function App() {
-  return <Outlet />;
+  return (
+    <AuthProvider>
+      <Outlet />
+    </AuthProvider>
+  );
 }
 
 export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
