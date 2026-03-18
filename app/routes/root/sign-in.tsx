@@ -20,6 +20,7 @@ const loginSchema = z.object({
 const SignIn = () => {
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
+  const { refreshUser } = useAuth();
 
   const form = useForm<z.infer<typeof loginSchema>>({
     resolver: zodResolver(loginSchema),
@@ -30,7 +31,6 @@ const SignIn = () => {
   });
 
   const onSubmit = async (values: z.infer<typeof loginSchema>) => {
-    const { refreshUser } = useAuth();
     setIsLoading(true);
 
     try {

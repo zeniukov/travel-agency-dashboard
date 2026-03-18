@@ -6,6 +6,7 @@ import { useNavigate } from "react-router";
 import { useState } from "react";
 import { signUpUser } from "~/appwrite/auth";
 import { AuthFormField, AuthLayout, LoadingButton } from "~/components";
+import { useAuth } from "~/appwrite/AuthProvider";
 
 // export async function clientLoader() {
 //   return requireGuest();
@@ -29,6 +30,7 @@ const registerSchema = z
 const SignUp = () => {
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
+  const { refreshUser } = useAuth();
 
   const form = useForm<z.infer<typeof registerSchema>>({
     resolver: zodResolver(registerSchema),
@@ -42,13 +44,18 @@ const SignUp = () => {
 
   const onSubmit = async (values: z.infer<typeof registerSchema>) => {
     setIsLoading(true);
+    console.log("pop");
     try {
       const { email, username, password } = values;
 
       const createdUser = await signUpUser(email, username, password);
 
-      if (createdUser) navigate("/");
+      if (createdUser) {
+        await refreshUser();
+        navigate("/", { replace: true });
+      }
     } catch (error: any) {
+      console.error("Registration Error:", error);
       const errorMessage = error.message?.toLowerCase() || "";
 
       if (error.code === 409) {
@@ -82,6 +89,14 @@ const SignUp = () => {
                 placeholder="Email..."
                 inputType="email"
                 autoComplete="email"
+                formControl={form.control}
+              />
+
+              <AuthFormField
+                name="username"
+                label="Username"
+                placeholder="Username..."
+                inputType="text"
                 formControl={form.control}
               />
 

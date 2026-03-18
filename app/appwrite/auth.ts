@@ -59,18 +59,20 @@ export const registerUser = async (
   }
 };
 
-export const createUserProfile = async () => {
+export const createUserProfile = async (
+  userId: string,
+  email: string,
+  name: string,
+) => {
   try {
-    const user = await account.get();
-
     const createdUser = await database.createDocument(
       appwriteConfig.databaseId,
       appwriteConfig.userCollectionId,
       ID.unique(),
       {
-        accountId: user.$id,
-        email: user.email,
-        name: user.name,
+        accountId: userId,
+        email: email,
+        name: name,
         joinedAt: new Date().toISOString(),
       },
     );
@@ -91,11 +93,11 @@ export const signUpUser = async (
       throw { code: 409, message: "username already taken" };
     }
 
-    await registerUser(email, username, password);
+    const user = await registerUser(email, username, password);
 
     await logIn(email, password);
 
-    const profile = await createUserProfile();
+    const profile = await createUserProfile(user.$id, user.email, user.name);
 
     return profile;
   } catch (error: any) {
